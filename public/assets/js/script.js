@@ -11,13 +11,38 @@ updateHeadline(
 );
 
 document.getElementById('changeHeadlineButton').addEventListener('click', function () {
-    //TODO 1 : Get a random article
+    fetch('/ajax/random/article')
+        .then(response => {
+            if (response.ok) {
+                return response.json()
+            }
+        })
+        .then(data => {
+            updateHeadline(data.title, data.picture, data.content)
+        })
 });
 
 
-document.getElementById('searchHeadline').addEventListener('change', function(e) {
-    //Here we get the value typed in the input
+document.getElementById('searchHeadline').addEventListener('keydown', function (e) {
     let search = e.target.value;
 
-    //TODO 2 : Call the route 'ajax/search/articles' to get the list of the articles targeted by the search
+    fetch("ajax/search/articles?search=" + search)
+        .then(response => {
+            if (response.ok) {
+                return response.json()
+            }
+        })
+        .then(data => {
+            let liste = document.getElementById('resultList')
+            liste.innerHTML = '';
+
+            data.forEach(article => {
+                let li = document.createElement('li')
+                let a = document.createElement('a')
+                a.href = "/article?id="+article.id
+                a.innerText = article.title
+                li.appendChild(a)
+                liste.append(li)
+            })
+        })
 });
